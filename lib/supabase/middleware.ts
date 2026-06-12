@@ -2,7 +2,7 @@ import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 import type { Database } from '@/lib/database.types'
 
-const PUBLIC_PATHS = new Set<string>(['/', '/conta-em-analise'])
+const PUBLIC_PATHS = new Set<string>(['/', '/conta-em-analise', '/aplicar'])
 
 function isPublic(pathname: string) {
   if (PUBLIC_PATHS.has(pathname)) return true
@@ -12,6 +12,7 @@ function isPublic(pathname: string) {
   // hit by anonymous visitors / the brand site, never by a logged-in partner.
   if (pathname.startsWith('/r/')) return true
   if (pathname.startsWith('/api/track/')) return true
+  if (pathname.startsWith('/api/ref/')) return true
   if (pathname.startsWith('/favicon')) return true
   if (pathname.match(/\.(svg|png|jpg|jpeg|gif|webp|ico)$/)) return true
   return false
@@ -21,7 +22,11 @@ export async function updateSession(request: NextRequest) {
   // Fast path: the attribution routes are anonymous and don't need a session
   // refresh. Skip the Supabase round-trip so the referral redirect stays snappy.
   const { pathname: earlyPath } = request.nextUrl
-  if (earlyPath.startsWith('/r/') || earlyPath.startsWith('/api/track/')) {
+  if (
+    earlyPath.startsWith('/r/') ||
+    earlyPath.startsWith('/api/track/') ||
+    earlyPath.startsWith('/api/ref/')
+  ) {
     return NextResponse.next({ request })
   }
 

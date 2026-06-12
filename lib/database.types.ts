@@ -31,6 +31,8 @@ type ProfilesRow = {
   status: ProfileStatus
   onboarding_completed: boolean
   society_tier: SocietyTierKey
+  primary_social: string | null
+  application_pitch: string | null
   created_at: string
 }
 

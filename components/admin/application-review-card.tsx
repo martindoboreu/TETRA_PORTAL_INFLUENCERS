@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import { setPartnerStatus, type AdminActionState } from '@/app/admin/actions'
-import { formatDateLong } from '@/lib/format'
+import { formatDateLong, formatFollowers } from '@/lib/format'
 import type { PartnerApplication } from '@/lib/queries/admin-applications'
 
 const INITIAL: AdminActionState = { ok: true, error: null }
@@ -55,9 +55,25 @@ export function ApplicationReviewCard({ application }: { application: PartnerApp
 
             <dl className="grid gap-3 text-sm sm:grid-cols-2">
               <div>
+                <dt className="text-[#9CA3AF]">Rede principal</dt>
+                <dd className="font-medium text-[#1d1d1b]">
+                  {application.primary_social
+                    ? `${application.primary_social}${application.follower_count ? ` · ${formatFollowers(application.follower_count)}` : ''}`
+                    : application.follower_count
+                      ? formatFollowers(application.follower_count)
+                      : '—'}
+                </dd>
+              </div>
+              <div>
                 <dt className="text-[#9CA3AF]">Chave PIX</dt>
                 <dd className="font-medium text-[#1d1d1b]">{application.pix_key ?? '—'}</dd>
               </div>
+              {application.application_pitch && (
+                <div className="sm:col-span-2">
+                  <dt className="text-[#9CA3AF]">Sobre o público</dt>
+                  <dd className="text-[#1d1d1b]">{application.application_pitch}</dd>
+                </div>
+              )}
               <div>
                 <dt className="text-[#9CA3AF]">Redes conectadas</dt>
                 <dd className="font-medium text-[#1d1d1b]">

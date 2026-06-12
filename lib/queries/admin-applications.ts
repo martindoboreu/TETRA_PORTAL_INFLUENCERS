@@ -9,6 +9,9 @@ export type PartnerApplication = {
   avatar_initials: string | null
   pix_key: string | null
   email: string | null
+  follower_count: number
+  primary_social: string | null
+  application_pitch: string | null
   created_at: string
   integrations: {
     provider: string
@@ -24,7 +27,7 @@ export async function getPendingApplications(): Promise<PartnerApplication[]> {
 
   const { data: profiles, error } = await admin
     .from('profiles')
-    .select('id, full_name, handle, avatar_initials, pix_key, created_at')
+    .select('id, full_name, handle, avatar_initials, pix_key, follower_count, primary_social, application_pitch, created_at')
     .eq('role', 'partner')
     .eq('status', 'pendente')
     .order('created_at', { ascending: true })
@@ -65,6 +68,9 @@ export async function getPendingApplications(): Promise<PartnerApplication[]> {
     avatar_initials: p.avatar_initials,
     pix_key: p.pix_key,
     email: emailById.get(p.id) ?? null,
+    follower_count: p.follower_count ?? 0,
+    primary_social: p.primary_social ?? null,
+    application_pitch: p.application_pitch ?? null,
     created_at: p.created_at,
     integrations: integrationsByPartner.get(p.id) ?? [],
   }))

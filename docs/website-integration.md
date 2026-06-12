@@ -96,6 +96,43 @@ Now `tetraeducacao.com.br/r/{slug}` records the click in the portal and redirect
 `}</Script>
 ```
 
+### 2b. Personalize the visit — resolve the ref (THE core flow)
+
+When a visitor arrives via an influencer link, turn the site into "their copy":
+auto-apply the influencer's coupon at checkout and credit them on the page. The
+portal exposes a public resolver:
+
+```
+GET https://portal.tetraeducacao.com.br/api/ref/{slug}
+→ { valid: true, coupon: "IAREEL15", partner: { name, handle, initials } }
+```
+
+Use it server-side to read the `tetra_ref` cookie and stamp the experience:
+
+```ts
+// lib/attribution.ts (website repo)
+export async function getAttribution(slug?: string) {
+  if (!slug) return null
+  const res = await fetch(`${process.env.TETRA_PORTAL_URL}/api/ref/${slug}`, {
+    next: { revalidate: 300 },
+  })
+  const data = await res.json()
+  return data.valid ? data : null   // { coupon, partner: { name, handle } }
+}
+```
+
+Then, in your layout / checkout:
+- **Auto-apply the coupon:** append `data.coupon` to every Guru/Onprofit
+  checkout URL (or pre-fill the coupon field) so the buyer never types it and
+  the sale attributes automatically.
+- **Credit the influencer ("link back"):** render a small banner like
+  *“Indicado por @{data.partner.handle}”* — the personalized touch that makes it
+  the influencer's copy of the site.
+
+Because attribution rides the coupon, the conversion is credited even if the
+buyer bounces and returns days later — Guru/Onprofit still send the coupon in
+the webhook.
+
 ### 3. Report leads — API route + form
 
 Website env: `TETRA_PORTAL_URL=https://portal.tetraeducacao.com.br`,
