@@ -1,6 +1,7 @@
 'use server'
 
 import { revalidatePath } from 'next/cache'
+import { createAdminClient } from '@/lib/supabase/admin'
 import { createClient } from '@/lib/supabase/server'
 import type { ProfileStatus, SocietyTierKey, Database } from '@/lib/database.types'
 import { isSocietyTierKey, tierConfig } from '@/lib/society'
@@ -165,7 +166,8 @@ export async function updateSocietyTierRate(
     .update({ commission_rate: ratePct / 100 })
     .eq('id', id)
   if (error) return { ok: false, error: 'Não foi possível salvar o status.' }
-  await supabase.rpc('reapply_society_rates')
+  const admin = createAdminClient()
+  await admin.rpc('reapply_society_rates')
   revalidatePath('/admin/configuracoes')
   revalidatePath('/admin/parceiros')
   revalidatePath('/admin/society')
@@ -180,7 +182,8 @@ export async function markPartnerPaid(
   const reference = String(formData.get('reference_period') ?? '').trim() || null
   if (!id) return { ok: false, error: 'Parceiro inválido.' }
   const supabase = await assertAdmin()
-  const { data, error } = await supabase.rpc('admin_mark_partner_paid', {
+  const admin = createAdminClient()
+  const { data, error } = await admin.rpc('admin_mark_partner_paid', {
     p_partner: id,
     p_reference_period: reference,
   })
