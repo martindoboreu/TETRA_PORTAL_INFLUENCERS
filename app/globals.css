@@ -1,0 +1,184 @@
+@import 'tailwindcss';
+@import 'tw-animate-css';
+
+@custom-variant dark (&:is(.dark *));
+
+:root {
+  --background: #FFFFFF;
+  --foreground: #1d1d1b;
+  --card: #FFFFFF;
+  --card-foreground: #1d1d1b;
+  --popover: #FFFFFF;
+  --popover-foreground: #1d1d1b;
+  --primary: #0FB5A6;
+  --primary-foreground: #FFFFFF;
+  --secondary: #f6f6f6;
+  --secondary-foreground: #1d1d1b;
+  --muted: #f6f6f6;
+  --muted-foreground: #6B7280;
+  --accent: #0FB5A6;
+  --accent-foreground: #FFFFFF;
+  --destructive: #EF4444;
+  --destructive-foreground: #FFFFFF;
+  --border: #E5E5E5;
+  --input: #E5E5E5;
+  --ring: #0FB5A6;
+  --chart-1: #0FB5A6;
+  --chart-2: #1d1d1b;
+  --chart-3: #6B7280;
+  --chart-4: #9CA3AF;
+  --chart-5: #E5E5E5;
+  --radius: 0.875rem;
+  --sidebar-bg: #1d1d1b;
+  --sidebar-foreground: #f6f6f6;
+  --sidebar-primary: #0FB5A6;
+  --sidebar-primary-foreground: #FFFFFF;
+  --sidebar-accent: rgba(255,255,255,0.08);
+  --sidebar-accent-foreground: #f6f6f6;
+  --sidebar-border: rgba(255,255,255,0.1);
+  --sidebar-ring: #0FB5A6;
+  --sidebar-muted: rgba(255,255,255,0.5);
+
+  /* --- Semantic design tokens (Tetra) --- */
+  --brand: #0FB5A6;
+  --brand-strong: #0E9F92;
+  --brand-deep: #0E7C73;
+  --brand-soft: rgba(15, 181, 166, 0.12);
+  --ink: #1d1d1b;
+  --ink-muted: #6B7280;
+  --ink-subtle: #9CA3AF;
+  --surface: #FFFFFF;
+  --surface-muted: #f6f6f6;
+  --line: #E5E5E5;
+  --line-soft: #F3F4F6;
+  --status-success: #0FB5A6;
+  --status-pending: #F59E0B;
+  --status-danger: #EF4444;
+  --status-neutral: #6B7280;
+  --elevation-card: 0 2px 8px rgba(0, 0, 0, 0.04);
+  --elevation-card-hover: 0 4px 12px rgba(0, 0, 0, 0.08);
+  --elevation-pop: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+@theme inline {
+  --font-sans: 'Geist', 'Geist Fallback', system-ui, sans-serif;
+  --font-mono: 'Geist Mono', 'Geist Mono Fallback', monospace;
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-sidebar: var(--sidebar-bg);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-brand: var(--brand);
+  --color-brand-strong: var(--brand-strong);
+  --color-brand-deep: var(--brand-deep);
+  --color-ink: var(--ink);
+  --color-ink-muted: var(--ink-muted);
+  --color-ink-subtle: var(--ink-subtle);
+  --color-surface: var(--surface);
+  --color-surface-muted: var(--surface-muted);
+  --color-line: var(--line);
+  --color-line-soft: var(--line-soft);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+/* Tabular numbers for consistent alignment */
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+}
+
+/* --- Typography scale (Tetra) --- */
+.text-micro {
+  font-size: 11px;
+  line-height: 1rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+}
+
+/* --- Surface helpers --- */
+.tetra-card {
+  border-radius: 1rem;
+  border: 1px solid var(--line);
+  background-color: var(--surface);
+  box-shadow: var(--elevation-card);
+}
+
+/* Animate count up */
+@keyframes countUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-count-up {
+  animation: countUp 0.5s ease-out forwards;
+}
+
+/* Staggered fade in */
+@keyframes fadeSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-slide-up {
+  animation: fadeSlideUp 0.4s ease-out forwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-count-up,
+  .animate-fade-slide-up {
+    animation: none;
+  }
+}
+
