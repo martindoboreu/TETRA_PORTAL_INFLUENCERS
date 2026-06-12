@@ -25,12 +25,22 @@ export async function updateSession(request: NextRequest) {
     return NextResponse.next({ request })
   }
 
-  let supabaseResponse = NextResponse.next({ request })
+  // Misconfiguration guard: without the Supabase env the client can't be built.
+  // Fail OPEN (let the request through) rather than throwing a site-wide 500
+  // (MIDDLEWARE_INVOCATION_FAILED). Authenticated routes stay protected by the
+  // page-level requireUser()/requireAdmin() guards. NEXT_PUBLIC_* are inlined at
+  // build time — if this branch fires in production, the env was missing at build.
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+  if (!supabaseUrl || !supabaseAnonKey) {
+    console.error('[middleware] Missing NEXT_PUBLIC_SUPABASE_URL / NEXT_PUBLIC_SUPABASE_ANON_KEY — skipping auth routing.')
+    return NextResponse.next({ request })
+  }
 
-  const supabase = createServerClient<Database>(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
+  try {
+    let supabaseResponse = NextResponse.next({ request })
+
+    const supabase = createServerClient<Database>(supabaseUrl, supabaseAnonKey, {
       cookies: {
         getAll() {
           return request.cookies.getAll()
@@ -45,16 +55,15 @@ export async function updateSession(request: NextRequest) {
           )
         },
       },
-    }
-  )
+    })
 
-  // IMPORTANT: per @supabase/ssr docs, do NOT run logic between getUser() and the
-  // returned response — it will desynchronize the session cookie.
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
+    // IMPORTANT: per @supabase/ssr docs, do NOT run logic between getUser() and the
+    // returned response — it will desynchronize the session cookie.
+    const {
+      data: { user },
+    } = await supabase.auth.getUser()
 
-  const { pathname } = request.nextUrl
+    const { pathname } = request.nextUrl
 
   // 1) Unauthenticated → push to /
   if (!user) {
@@ -157,5 +166,11 @@ export async function updateSession(request: NextRequest) {
     }
   }
 
-  return supabaseResponse
+    return supabaseResponse
+  } catch (err) {
+    // Any failure in the auth/session round-trip (bad env, network, Supabase
+    // outage) must not 500 the whole site. Fail open — pages guard themselves.
+    console.error('[middleware] auth routing failed, passing request through:', err)
+    return NextResponse.next({ request })
+  }
 }
