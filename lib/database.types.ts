@@ -109,6 +109,7 @@ type LeadsRow = {
   partner_id: string
   link_id: string | null
   buyer_masked: string | null
+  external_id: string | null
   created_at: string
 }
 
@@ -122,6 +123,7 @@ type ConversionsRow = {
   commission: number
   status: ConversionStatus
   payout_id: string | null
+  external_id: string | null
   created_at: string
 }
 
@@ -220,16 +222,21 @@ export interface Database {
       }
       leads: {
         Row: LeadsRow
-        Insert: Omit<LeadsRow, 'id' | 'created_at'> & { id?: string; created_at?: string }
+        Insert: Omit<LeadsRow, 'id' | 'created_at' | 'external_id'> & {
+          id?: string
+          external_id?: string | null
+          created_at?: string
+        }
         Update: Partial<LeadsRow>
         Relationships: []
       }
       conversions: {
         Row: ConversionsRow
-        Insert: Omit<ConversionsRow, 'id' | 'created_at' | 'status' | 'payout_id'> & {
+        Insert: Omit<ConversionsRow, 'id' | 'created_at' | 'status' | 'payout_id' | 'external_id'> & {
           id?: string
           status?: ConversionStatus
           payout_id?: string | null
+          external_id?: string | null
           created_at?: string
         }
         Update: Partial<ConversionsRow>

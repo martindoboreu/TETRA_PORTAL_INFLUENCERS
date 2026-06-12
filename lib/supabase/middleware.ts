@@ -8,12 +8,23 @@ function isPublic(pathname: string) {
   if (PUBLIC_PATHS.has(pathname)) return true
   if (pathname.startsWith('/_next')) return true
   if (pathname.startsWith('/api/auth')) return true
+  // Attribution pipeline: the referral redirect and the ingestion endpoints are
+  // hit by anonymous visitors / the brand site, never by a logged-in partner.
+  if (pathname.startsWith('/r/')) return true
+  if (pathname.startsWith('/api/track/')) return true
   if (pathname.startsWith('/favicon')) return true
   if (pathname.match(/\.(svg|png|jpg|jpeg|gif|webp|ico)$/)) return true
   return false
 }
 
 export async function updateSession(request: NextRequest) {
+  // Fast path: the attribution routes are anonymous and don't need a session
+  // refresh. Skip the Supabase round-trip so the referral redirect stays snappy.
+  const { pathname: earlyPath } = request.nextUrl
+  if (earlyPath.startsWith('/r/') || earlyPath.startsWith('/api/track/')) {
+    return NextResponse.next({ request })
+  }
+
   let supabaseResponse = NextResponse.next({ request })
 
   const supabase = createServerClient<Database>(

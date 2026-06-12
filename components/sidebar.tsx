@@ -10,6 +10,7 @@ import {
   Landmark,
   Megaphone,
   ShieldCheck,
+  ExternalLink,
   LogOut,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
@@ -42,6 +43,7 @@ interface SidebarProps {
 
 export function Sidebar({ onClose, profile }: SidebarProps) {
   const pathname = usePathname()
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://tetraeducacao.com.br'
 
   const fullName = profile?.full_name ?? 'Parceiro'
   const handle = profile?.handle ? `@${profile.handle}` : '—'
@@ -87,6 +89,18 @@ export function Sidebar({ onClose, profile }: SidebarProps) {
           })}
         </ul>
       </nav>
+
+      <a
+        href={siteUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="mx-3 mb-1 flex items-center justify-between gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-white/55 transition-colors hover:bg-white/5 hover:text-white/90"
+      >
+        <span className="flex items-center gap-3">
+          <ExternalLink className="h-[18px] w-[18px] shrink-0 opacity-80" />
+          Ver site da Tetra
+        </span>
+      </a>
 
       <div className="border-t border-white/10 p-4">
         <div className="flex items-center gap-3">
