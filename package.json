@@ -7,7 +7,12 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint .",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "sim:setup": "node scripts/sim/setup.mjs",
+    "sim:run": "node scripts/sim/run.mjs",
+    "sim:verify": "node scripts/sim/verify.mjs",
+    "sim:cleanup": "node scripts/sim/cleanup.mjs",
+    "sim": "npm run sim:setup && npm run sim:run && npm run sim:verify"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.1",
