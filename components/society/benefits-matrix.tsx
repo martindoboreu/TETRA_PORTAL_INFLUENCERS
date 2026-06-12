@@ -39,7 +39,8 @@ export function BenefitsMatrix({ currentTier, tiers }: BenefitsMatrixProps) {
               <div className="flex items-center justify-between gap-2">
                 <SocietyMark tier={tier.key} full />
                 {isCurrent && (
-                  <span className="text-[11px] font-medium uppercase tracking-[0.06em] text-ink-muted">
+                  <span className="inline-flex items-center gap-1 whitespace-nowrap text-[11px] font-medium uppercase tracking-[0.06em] text-[#0E7C73]">
+                    <span aria-hidden className="h-1.5 w-1.5 rounded-full bg-[#0FB5A6]" />
                     Seu status
                   </span>
                 )}

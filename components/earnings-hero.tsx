@@ -12,6 +12,8 @@ interface EarningsHeroProps {
   /** Partner's own commission rate as a percentage (e.g. 30). */
   commissionRatePct: number
   rangeLabel: string
+  /** Full Society status name, e.g. "Tetra Signature". */
+  societyTierName: string
 }
 
 export function EarningsHero({
@@ -21,6 +23,7 @@ export function EarningsHero({
   nextPayoutLabel,
   commissionRatePct,
   rangeLabel,
+  societyTierName,
 }: EarningsHeroProps) {
   const isPositive = periodCommissionDelta >= 0
 
@@ -54,7 +57,7 @@ export function EarningsHero({
           <HeroStat label="A receber" value={formatCurrency(pendingCommission)} accent />
           <HeroStat label="Próximo repasse" value={nextPayoutLabel} />
           <HeroStat label="Sua comissão" value={`${commissionRatePct}%`} />
-          <HeroStat label="Pagamento" value="via PIX" />
+          <HeroStat label="Status" value={societyTierName} />
         </div>
       </div>
     </section>

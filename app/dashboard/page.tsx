@@ -28,7 +28,7 @@ import {
 import { parseDateRange, resolveRange } from '@/lib/queries/range'
 import { formatDateShort } from '@/lib/format'
 import { referralDisplay } from '@/lib/links'
-import { normalizeTierKey } from '@/lib/society'
+import { normalizeTierKey, tierConfig } from '@/lib/society'
 
 export const dynamic = 'force-dynamic'
 
@@ -68,6 +68,8 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
 
   const activeLinks = links.filter((l) => l.status === 'active')
   const connectedSocials = integrations.filter((i) => i.status === 'connected')
+  const societyTier = normalizeTierKey(profile?.society_tier)
+  const linkStatusById = Object.fromEntries(links.map((l) => [l.id, l.status]))
 
   return (
     <>
@@ -97,9 +99,8 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
           nextPayoutLabel={nextPayoutLabel}
           commissionRatePct={commissionRatePct}
           rangeLabel={range.label}
+          societyTierName={tierConfig(societyTier).name}
         />
-
-        <SocietyStatusStrip tier={normalizeTierKey(profile?.society_tier)} />
 
         <NextActions
           pixKeyMissing={!profile?.pix_key}
@@ -119,10 +120,12 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
           <div className="xl:col-span-2">
             <PerformanceChart data={chart} />
           </div>
-          <FunnelCard data={funnel} />
+          <FunnelCard data={funnel} nextPayoutLabel={nextPayoutLabel} />
         </div>
 
-        <LinkPerformanceTable data={linkPerf} />
+        <LinkPerformanceTable data={linkPerf} statusById={linkStatusById} />
+
+        <SocietyStatusStrip tier={societyTier} />
 
         <div className="grid gap-6 lg:grid-cols-2">
           <RecentConversions data={recent} />

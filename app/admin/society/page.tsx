@@ -62,7 +62,9 @@ export default async function AdminSocietyPage() {
               </CardHeader>
               <CardContent>
                 {members.length === 0 ? (
-                  <p className="py-4 text-center text-sm text-[#9CA3AF]">Nenhum parceiro neste status.</p>
+                  <p className="py-4 text-center text-sm text-[#9CA3AF]">
+                    Nenhum parceiro neste status — convites são estendidos manualmente pela equipe.
+                  </p>
                 ) : (
                   <div className="space-y-2">
                     {members.map((p) => {

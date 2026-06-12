@@ -93,11 +93,11 @@ export const SOCIETY_BENEFITS: SocietyBenefit[] = [
   { id: 'private-calls', label: 'Calls privadas', minTier: 'circle' },
   { id: 'advanced-analytics', label: 'Analytics avançado', minTier: 'circle' },
 
-  { id: 'cocreated-campaigns', label: 'Campanhas co-criadas', minTier: 'council' },
+  { id: 'cocreated-campaigns', label: 'Co-criação de campanhas', minTier: 'council' },
   { id: 'special-contracts', label: 'Contratos especiais', minTier: 'council' },
-  { id: 'direction-access', label: 'Acesso à direção', minTier: 'council' },
-  { id: 'exclusive-events', label: 'Eventos exclusivos', minTier: 'council' },
-  { id: 'strategic-opportunities', label: 'Oportunidades estratégicas privadas', minTier: 'council' },
+  { id: 'direction-access', label: 'Acesso à diretoria e fundadores', minTier: 'council' },
+  { id: 'exclusive-events', label: 'Eventos privados', minTier: 'council' },
+  { id: 'strategic-opportunities', label: 'Estratégia de lançamentos', minTier: 'council' },
 ]
 
 // The six criteria the team weighs before extending an invitation.

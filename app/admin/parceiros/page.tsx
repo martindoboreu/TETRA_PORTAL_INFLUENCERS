@@ -1,6 +1,5 @@
 import Link from 'next/link'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
+import { Card, CardContent } from '@/components/ui/card'
 import {
   Table,
   TableBody,
@@ -13,24 +12,13 @@ import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { PartnerFilters } from '@/components/admin/partner-filters'
 import { PartnerActions } from '@/components/admin/partner-actions'
 import { SocietyMark } from '@/components/society/society-mark'
+import { StatusBadge } from '@/components/status-badge'
 import { getPartnerRollup, getPartnerFollowerMap, getPartnerSocietyMap } from '@/lib/queries/admin'
 import { resolveRange } from '@/lib/queries/range'
 import { formatCurrency, formatNumber, formatFollowers } from '@/lib/format'
-import { SOCIETY_TIERS } from '@/lib/society'
+import { SOCIETY_TIERS, isSocietyTierKey } from '@/lib/society'
 
 export const dynamic = 'force-dynamic'
-
-const STATUS_STYLES: Record<string, string> = {
-  ativo: 'bg-[#0FB5A6]/15 text-[#0E9F92]',
-  pendente: 'bg-amber-500/15 text-amber-600',
-  inativo: 'bg-[#6B7280]/10 text-[#6B7280]',
-}
-
-const STATUS_LABEL: Record<string, string> = {
-  ativo: 'Ativo',
-  pendente: 'Pendente',
-  inativo: 'Inativo',
-}
 
 type StatusFilter = 'todos' | 'ativo' | 'pendente' | 'inativo'
 
@@ -43,7 +31,7 @@ export default async function ParceirosPage({ searchParams }: ParceirosPageProps
 
   const statusFilter: StatusFilter =
     status === 'ativo' || status === 'pendente' || status === 'inativo' ? status : 'todos'
-  const levelFilter = level && level !== 'todos' ? level : 'todos'
+  const levelFilter = isSocietyTierKey(level) ? level : 'todos'
   const search = (q ?? '').trim().toLowerCase()
 
   // Use "tudo" range so the roster shows lifetime cliques/conversões/comissão.
@@ -55,7 +43,8 @@ export default async function ParceirosPage({ searchParams }: ParceirosPageProps
 
   const filtered = rollup.filter((p) => {
     if (statusFilter !== 'todos' && p.status !== statusFilter) return false
-    if (levelFilter !== 'todos' && p.tier !== levelFilter) return false
+    if (levelFilter !== 'todos' && (societyMap.get(p.partner_id) ?? 'select') !== levelFilter)
+      return false
     if (search) {
       const hay = `${p.full_name ?? ''} ${p.handle ?? ''}`.toLowerCase()
       if (!hay.includes(search)) return false
@@ -78,42 +67,45 @@ export default async function ParceirosPage({ searchParams }: ParceirosPageProps
 
       <div className="px-4 py-6 sm:px-6 lg:px-8">
         <Card className="border-[#E5E5E5] bg-white">
-          <CardHeader className="pb-4">
-            <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-              <CardTitle className="text-base font-semibold text-[#1d1d1b]">
-                {filtered.length} {filtered.length === 1 ? 'parceiro' : 'parceiros'}
-              </CardTitle>
+          <CardContent className="pt-6">
+            <div className="flex flex-col gap-3 pb-5">
               <PartnerFilters
                 initialSearch={q ?? ''}
                 initialStatus={statusFilter}
                 initialLevel={levelFilter}
-                levels={SOCIETY_TIERS.map((t) => t.name)}
+                levels={SOCIETY_TIERS.map((t) => ({ value: t.key, label: t.name }))}
               />
+              <p className="text-sm text-[#6B7280]">
+                <span className="font-semibold tabular-nums text-[#1d1d1b]">{filtered.length}</span>{' '}
+                {filtered.length === 1 ? 'parceiro' : 'parceiros'}
+                {(statusFilter !== 'todos' || levelFilter !== 'todos' || search) && ' com esses filtros'}
+              </p>
             </div>
-          </CardHeader>
-          <CardContent>
+
             <div className="overflow-x-auto">
               {filtered.length === 0 ? (
-                <p className="py-8 text-center text-sm text-[#6B7280]">Nenhum parceiro para esses filtros.</p>
+                <p className="py-10 text-center text-sm text-[#6B7280]">
+                  Nenhum parceiro para esses filtros.
+                </p>
               ) : (
                 <Table>
                   <TableHeader>
-                    <TableRow className="border-[#E5E5E5]">
-                      <TableHead className="text-xs font-medium text-[#6B7280]">Parceiro</TableHead>
+                    <TableRow className="border-[#E5E5E5] hover:bg-transparent">
+                      <TableHead className="min-w-[200px] text-xs font-medium text-[#6B7280]">Parceiro</TableHead>
                       <TableHead className="text-xs font-medium text-[#6B7280]">Handle</TableHead>
-                      <TableHead className="text-xs font-medium text-[#6B7280]">Status</TableHead>
-                      <TableHead className="text-right text-xs font-medium text-[#6B7280]">Alcance</TableHead>
-                      <TableHead className="text-xs font-medium text-[#6B7280]">Status</TableHead>
-                      <TableHead className="text-right text-xs font-medium text-[#6B7280]">Cliques</TableHead>
+                      <TableHead className="text-xs font-medium text-[#6B7280]">Society</TableHead>
+                      <TableHead className="text-xs font-medium text-[#6B7280]">Conta</TableHead>
+                      <TableHead className="hidden text-right text-xs font-medium text-[#6B7280] lg:table-cell">Alcance</TableHead>
+                      <TableHead className="hidden text-right text-xs font-medium text-[#6B7280] md:table-cell">Cliques</TableHead>
                       <TableHead className="text-right text-xs font-medium text-[#6B7280]">Conversões</TableHead>
                       <TableHead className="text-right text-xs font-medium text-[#6B7280]">Comissão</TableHead>
-                      <TableHead className="text-right text-xs font-medium text-[#6B7280]">Ações</TableHead>
+                      <TableHead className="w-24 text-right text-xs font-medium text-[#6B7280]">Ações</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {filtered.map((p) => (
                       <TableRow key={p.partner_id} className="border-[#E5E5E5]">
-                        <TableCell>
+                        <TableCell className="py-3">
                           <Link href={`/admin/parceiros/${p.partner_id}`} className="flex items-center gap-3 hover:underline">
                             <Avatar className="h-9 w-9 border border-[#E5E5E5]">
                               <AvatarFallback className="bg-[#1d1d1b] text-xs text-[#f6f6f6]">
@@ -127,15 +119,17 @@ export default async function ParceirosPage({ searchParams }: ParceirosPageProps
                         <TableCell>
                           <SocietyMark tier={societyMap.get(p.partner_id) ?? 'select'} full />
                         </TableCell>
-                        <TableCell className="text-right text-sm tabular-nums text-[#6B7280]">
+                        <TableCell>
+                          <StatusBadge status={p.status} />
+                        </TableCell>
+                        <TableCell className="hidden text-right text-sm tabular-nums text-[#6B7280] lg:table-cell">
                           {formatFollowers(followerMap.get(p.partner_id) ?? 0)}
                         </TableCell>
-                        <TableCell>
-                          <Badge className={STATUS_STYLES[p.status]}>{STATUS_LABEL[p.status]}</Badge>
+                        <TableCell className="hidden text-right text-sm tabular-nums text-[#1d1d1b] md:table-cell">
+                          {formatNumber(p.cliques)}
                         </TableCell>
-                        <TableCell className="text-right text-sm tabular-nums text-[#1d1d1b]">{formatNumber(p.cliques)}</TableCell>
                         <TableCell className="text-right text-sm tabular-nums text-[#1d1d1b]">{formatNumber(p.conversoes)}</TableCell>
-                        <TableCell className="text-right text-sm font-medium tabular-nums text-[#0FB5A6]">{formatCurrency(p.comissao)}</TableCell>
+                        <TableCell className="text-right text-sm font-medium tabular-nums text-[#0E7C73]">{formatCurrency(p.comissao)}</TableCell>
                         <TableCell className="text-right">
                           <PartnerActions
                             partnerId={p.partner_id}

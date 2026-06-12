@@ -9,6 +9,7 @@ import {
   Settings,
   Landmark,
   Megaphone,
+  ShieldCheck,
   LogOut,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
@@ -26,6 +27,7 @@ const navItems = [
   { label: 'Pagamentos', href: '/dashboard/comissoes', icon: Wallet },
   { label: 'Society', href: '/dashboard/society', icon: Landmark },
   { label: 'Materiais', href: '/dashboard/materiais', icon: FolderOpen },
+  { label: 'Compliance', href: '/dashboard/compliance', icon: ShieldCheck },
   { label: 'Configurações', href: '/dashboard/configuracoes', icon: Settings },
 ]
 

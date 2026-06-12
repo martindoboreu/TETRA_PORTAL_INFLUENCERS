@@ -72,12 +72,12 @@ Todas com a senha `Demo1234!`:
 | E-mail | Papel | Situação |
 |---|---|---|
 | `admin@tetraeducacao.com.br` | admin | — |
-| `marina@tetraeducacao.com.br` | partner (Ouro) | ativo |
-| `bruno@tetraeducacao.com.br` | partner (Diamante) | ativo |
-| `camila@tetraeducacao.com.br` | partner (Prata) | ativo |
-| `daniel@tetraeducacao.com.br` | partner (Prata) | ativo |
-| `eduarda@tetraeducacao.com.br` | partner (Ouro) | inativo |
-| `fabio@tetraeducacao.com.br` | partner (Prata) | pendente |
+| `marina@tetraeducacao.com.br` | partner (Tetra Signature) | ativo |
+| `bruno@tetraeducacao.com.br` | partner (Tetra Circle) | ativo |
+| `camila@tetraeducacao.com.br` | partner (Tetra Select) | ativo |
+| `daniel@tetraeducacao.com.br` | partner (Tetra Select) | ativo |
+| `eduarda@tetraeducacao.com.br` | partner (Tetra Council) | ativo |
+| `fabio@tetraeducacao.com.br` | partner (Tetra Select) | pendente |
 
 - Admin → `/admin`
 - Parceiro ativo → `/dashboard`

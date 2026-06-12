@@ -1,7 +1,7 @@
 import Link from 'next/link'
 import { ArrowRight, Lock } from 'lucide-react'
 import { SocietyMark } from '@/components/society/society-mark'
-import { tierConfig, firstLockedBenefit, nextTier } from '@/lib/society'
+import { tierConfig, firstLockedBenefit } from '@/lib/society'
 import type { SocietyTierKey } from '@/lib/database.types'
 
 interface StatusStripProps {
@@ -11,12 +11,13 @@ interface StatusStripProps {
 export function SocietyStatusStrip({ tier }: StatusStripProps) {
   const config = tierConfig(tier)
   const locked = firstLockedBenefit(tier)
-  const upcoming = nextTier(tier)
 
   // Aspiration teaser: the next benefit a partner doesn't yet have, framed as
   // private access rather than a reward to grind for.
   const teaser = locked
-    ? `${locked.label} ${locked.minTier === 'council' ? 'no Tetra Council (por convite)' : `liberado para ${tierConfig(locked.minTier).name} e acima.`}`
+    ? locked.minTier === 'council'
+      ? `${locked.label} — reservado ao Tetra Council, por convite.`
+      : `${locked.label} — liberado a partir de ${tierConfig(locked.minTier).name}.`
     : 'Você já tem acesso a todos os benefícios da Tetra Society.'
 
   return (
@@ -30,9 +31,8 @@ export function SocietyStatusStrip({ tier }: StatusStripProps) {
         </div>
         <p className="mt-2 text-sm font-medium text-ink">{config.standing}</p>
         <p className="mt-1 flex items-center gap-1.5 text-xs text-ink-muted">
-          <Lock className="h-3 w-3" />
+          <Lock className="h-3 w-3 shrink-0" />
           {teaser}
-          {upcoming && !upcoming.inviteOnly && locked && ` Critérios para convite ao ${upcoming.name}.`}
         </p>
       </div>
 

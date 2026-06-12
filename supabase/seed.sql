@@ -11,12 +11,12 @@
 -- After running this seed you can log in with any of these credentials:
 --
 --   admin@tetraeducacao.com.br   / Demo1234!   (role: admin)
---   marina@tetraeducacao.com.br  / Demo1234!   (Ouro,     ativo)
---   bruno@tetraeducacao.com.br   / Demo1234!   (Diamante, ativo)
---   camila@tetraeducacao.com.br  / Demo1234!   (Prata,    ativo)
---   daniel@tetraeducacao.com.br  / Demo1234!   (Prata,    ativo)
---   eduarda@tetraeducacao.com.br / Demo1234!   (Ouro,     inativo)
---   fabio@tetraeducacao.com.br   / Demo1234!   (Prata,    pendente)
+--   marina@tetraeducacao.com.br  / Demo1234!   (Tetra Signature, ativo)
+--   bruno@tetraeducacao.com.br   / Demo1234!   (Tetra Circle,    ativo)
+--   camila@tetraeducacao.com.br  / Demo1234!   (Tetra Select,    ativo)
+--   daniel@tetraeducacao.com.br  / Demo1234!   (Tetra Select,    ativo)
+--   eduarda@tetraeducacao.com.br / Demo1234!   (Tetra Council,   ativo)
+--   fabio@tetraeducacao.com.br   / Demo1234!   (Tetra Select,    pendente)
 --
 
 do $seed$
@@ -32,14 +32,16 @@ declare
   password_hash text := crypt('Demo1234!', gen_salt('bf'));
 
   -- (id, email, full_name, handle, initials, role, tier, rate, status)
+  -- Tier names mirror Tetra Society; the apply_society_tier trigger re-asserts
+  -- them at the bottom of this seed. No legacy metal-tier vocabulary anywhere.
   users constant text[][] := array[
-    [admin_id::text,   'admin@tetraeducacao.com.br',   'Equipe Tetra',    'tetra.team',  'TT', 'admin',   'Ouro',     '0.30', 'ativo'],
-    [marina_id::text,  'marina@tetraeducacao.com.br',  'Marina Castro',   'marina.dev',  'MC', 'partner', 'Ouro',     '0.30', 'ativo'],
-    [bruno_id::text,   'bruno@tetraeducacao.com.br',   'Bruno Almeida',   'bruno.al',    'BA', 'partner', 'Diamante', '0.35', 'ativo'],
-    [camila_id::text,  'camila@tetraeducacao.com.br',  'Camila Rocha',    'cami.rocha',  'CR', 'partner', 'Prata',    '0.28', 'ativo'],
-    [daniel_id::text,  'daniel@tetraeducacao.com.br',  'Daniel Lemos',    'dan.lemos',   'DL', 'partner', 'Prata',    '0.25', 'ativo'],
-    [eduarda_id::text, 'eduarda@tetraeducacao.com.br', 'Eduarda Lima',    'edu.lima',    'EL', 'partner', 'Ouro',     '0.30', 'inativo'],
-    [fabio_id::text,   'fabio@tetraeducacao.com.br',   'Fábio Nogueira',  'fabio.n',     'FN', 'partner', 'Prata',    '0.25', 'pendente']
+    [admin_id::text,   'admin@tetraeducacao.com.br',   'Equipe Tetra',    'tetra.team',  'TT', 'admin',   'Tetra Select',    '0.30', 'ativo'],
+    [marina_id::text,  'marina@tetraeducacao.com.br',  'Marina Castro',   'marina.dev',  'MC', 'partner', 'Tetra Signature', '0.32', 'ativo'],
+    [bruno_id::text,   'bruno@tetraeducacao.com.br',   'Bruno Almeida',   'bruno.al',    'BA', 'partner', 'Tetra Circle',    '0.35', 'ativo'],
+    [camila_id::text,  'camila@tetraeducacao.com.br',  'Camila Rocha',    'cami.rocha',  'CR', 'partner', 'Tetra Select',    '0.30', 'ativo'],
+    [daniel_id::text,  'daniel@tetraeducacao.com.br',  'Daniel Lemos',    'dan.lemos',   'DL', 'partner', 'Tetra Select',    '0.30', 'ativo'],
+    [eduarda_id::text, 'eduarda@tetraeducacao.com.br', 'Eduarda Lima',    'edu.lima',    'EL', 'partner', 'Tetra Council',   '0.38', 'ativo'],
+    [fabio_id::text,   'fabio@tetraeducacao.com.br',   'Fábio Nogueira',  'fabio.n',     'FN', 'partner', 'Tetra Select',    '0.30', 'pendente']
   ];
 
   -- Parallel arrays for course/price lookups
@@ -56,7 +58,7 @@ declare
   -- Active partners and per-partner click intensity / commission rate
   active_ids   uuid[]    := array[marina_id, bruno_id, camila_id, daniel_id];
   active_base  int[]     := array[140, 95, 55, 35];
-  active_rate  numeric[] := array[0.30, 0.35, 0.28, 0.25];
+  active_rate  numeric[] := array[0.32, 0.35, 0.30, 0.30];
 
   u text[];
   day_offset    int;
@@ -126,18 +128,21 @@ begin
   ]);
 
   insert into public.links (id, partner_id, label, slug, discount_code, status, created_at) values
-    ('a0000001-0000-0000-0000-000000000001', marina_id,  'Bio Instagram (@marina.dev)',  'marina',         'MARINA10',   'active', now() - interval '110 days'),
-    ('a0000001-0000-0000-0000-000000000002', marina_id,  'Reel "Parei de usar no-code"', 'marina-nocode',  'NOCODE15',   'active', now() - interval  '85 days'),
-    ('a0000001-0000-0000-0000-000000000003', marina_id,  'Descrição YouTube',            'marina-yt',      'MARINAYT',   'active', now() - interval  '60 days'),
-    ('a0000001-0000-0000-0000-000000000004', marina_id,  'Newsletter',                   'marina-news',    'NEWSLETTER', 'paused', now() - interval  '40 days'),
-    ('b0000002-0000-0000-0000-000000000001', bruno_id,   'LinkedIn newsletter',          'bruno-li',       'BRUNO10',    'active', now() - interval '100 days'),
-    ('b0000002-0000-0000-0000-000000000002', bruno_id,   'Bio TikTok',                   'bruno-tt',       'BRUNOTT',    'active', now() - interval  '70 days'),
-    ('b0000002-0000-0000-0000-000000000003', bruno_id,   'Podcast Dados ao Vivo',        'bruno-pod',      'PODCAST20',  'active', now() - interval  '55 days'),
-    ('c0000003-0000-0000-0000-000000000001', camila_id,  'Blog próprio',                 'cami-blog',      'CAMI10',     'active', now() - interval  '90 days'),
-    ('c0000003-0000-0000-0000-000000000002', camila_id,  'Comunidade Excel BR',          'cami-excel',     'EXCELBR',    'active', now() - interval  '45 days'),
-    ('d0000004-0000-0000-0000-000000000001', daniel_id,  'Email signature',              'dan-sig',        'DAN10',      'active', now() - interval  '80 days'),
-    ('d0000004-0000-0000-0000-000000000002', daniel_id,  'Grupo WhatsApp BI',            'dan-wpp',        'WPPBI',      'active', now() - interval  '50 days'),
-    ('e0000005-0000-0000-0000-000000000001', eduarda_id, 'Instagram (@edu.lima)',        'edu',            'EDU10',      'paused', now() - interval  '95 days');
+    ('a0000001-0000-0000-0000-000000000001', marina_id,  'Bio Instagram (@marina.dev)',     'marina',         'MARINA10',   'active', now() - interval '110 days'),
+    ('a0000001-0000-0000-0000-000000000002', marina_id,  'Reel "IA não é Google"',          'marina-iareel',  'IAREEL15',   'active', now() - interval  '85 days'),
+    ('a0000001-0000-0000-0000-000000000003', marina_id,  'Descrição YouTube',               'marina-yt',      'MARINAYT',   'active', now() - interval  '60 days'),
+    ('a0000001-0000-0000-0000-000000000005', marina_id,  'Story sequência IA',              'marina-story',   'STORYIA10',  'active', now() - interval  '30 days'),
+    ('a0000001-0000-0000-0000-000000000004', marina_id,  'Newsletter semanal',              'marina-news',    'NEWS10',     'paused', now() - interval  '40 days'),
+    ('b0000002-0000-0000-0000-000000000001', bruno_id,   'Newsletter LinkedIn',             'bruno-li',       'BRUNO10',    'active', now() - interval '100 days'),
+    ('b0000002-0000-0000-0000-000000000002', bruno_id,   'Bio TikTok',                      'bruno-tt',       'BRUNOTT',    'active', now() - interval  '70 days'),
+    ('b0000002-0000-0000-0000-000000000003', bruno_id,   'Podcast Dados ao Vivo',           'bruno-pod',      'PODCAST20',  'active', now() - interval  '55 days'),
+    ('b0000002-0000-0000-0000-000000000004', bruno_id,   'WhatsApp lista quente',           'bruno-wpp',      'WPPBRUNO',   'active', now() - interval  '35 days'),
+    ('c0000003-0000-0000-0000-000000000001', camila_id,  'Blog próprio',                    'cami-blog',      'CAMI10',     'active', now() - interval  '90 days'),
+    ('c0000003-0000-0000-0000-000000000002', camila_id,  'Comunidade Excel BR',             'cami-excel',     'EXCELBR',    'active', now() - interval  '45 days'),
+    ('c0000003-0000-0000-0000-000000000003', camila_id,  'Landing page personalizada',      'cami-lp',        'LPCAMI',     'active', now() - interval  '25 days'),
+    ('d0000004-0000-0000-0000-000000000001', daniel_id,  'Assinatura de e-mail',            'dan-sig',        'DAN10',      'active', now() - interval  '80 days'),
+    ('d0000004-0000-0000-0000-000000000002', daniel_id,  'Grupo WhatsApp BI',               'dan-wpp',        'WPPBI',      'active', now() - interval  '50 days'),
+    ('e0000005-0000-0000-0000-000000000001', eduarda_id, 'Bio Instagram (@edu.lima)',       'edu',            'EDU10',      'paused', now() - interval  '95 days');
 
   -- =========================================================================
   -- 90 days of clicks / leads / conversions
@@ -193,9 +198,13 @@ begin
         conv_buyer  := buyer_pool[1 + floor(random() * array_length(buyer_pool, 1))::int];
         conv_ts     := d::timestamptz + (random() * interval '24 hours');
 
+        -- Settlement mirrors the real payout cycle: conversions from previous
+        -- calendar months were settled on the monthly repasse ('pago');
+        -- the current month is still 'confirmado'. This keeps "Pagamentos
+        -- confirmados" non-zero in recent ranges instead of a broken-looking 0.
         if random() < 0.04 then
           conv_status := 'reembolsado';
-        elsif day_offset > 35 then
+        elsif date_trunc('month', conv_ts) < date_trunc('month', current_date) then
           conv_status := 'pago';
         else
           conv_status := 'confirmado';
@@ -260,12 +269,74 @@ update public.program_settings
 -- so profiles don't exist yet when those migrations try to invite participants —
 -- we backfill participation + notifications here, after profiles are created.
 -- ---------------------------------------------------------------------------
+-- Three named campaigns so briefs, the link table and Society criteria all
+-- speak the same product language.
+insert into public.campaigns (id, title, subtitle, brief, commission_note, content_requirements, reward_highlight, deadline, status, sort_order)
+values
+  (
+    'ca000001-0000-0000-0000-000000000001',
+    'Campanha Tetra AI',
+    'Lançamento do curso completo de IA aplicada',
+    'Mostre um caso real de uso de IA no trabalho e conecte com o curso. Foco em profissionais que querem produtividade, não em hype.',
+    'Comissão do seu status na Tetra Society sobre cada matrícula confirmada.',
+    '1 Reel + 1 sequência de stories com demonstração prática. Marque @tetraeducacao e use #TetraAI.',
+    'Acesso antecipado ao módulo de agentes para sua audiência.',
+    (now() + interval '21 days')::date,
+    'ativa',
+    2
+  ),
+  (
+    'ca000001-0000-0000-0000-000000000002',
+    'Campanha Excel Executivo',
+    'Excel Avançado para quem reporta a diretoria',
+    'Conteúdo voltado a analistas e coordenadores: dashboards, atalhos e automação de relatórios mensais.',
+    'Comissão do seu status na Tetra Society sobre cada matrícula confirmada.',
+    '1 post no feed ou 1 vídeo curto com dica aplicável. Cupom próprio no CTA.',
+    'Bônus de R$ 300 ao atingir 5 matrículas no período.',
+    (now() + interval '45 days')::date,
+    'ativa',
+    3
+  ),
+  (
+    'ca000001-0000-0000-0000-000000000003',
+    'Campanha Gestão na Prática',
+    'Pós em Gestão com cases brasileiros',
+    'Histórias de liderança e gestão de times — conecte sua vivência com o programa de pós-graduação.',
+    'Comissão do seu status na Tetra Society sobre cada matrícula confirmada.',
+    'Formato livre, mínimo de 2 peças no período. Revisão prévia obrigatória.',
+    'Convite para o encontro presencial de parceiros.',
+    (now() + interval '60 days')::date,
+    'ativa',
+    4
+  )
+on conflict (id) do nothing;
+
 insert into public.campaign_participants (campaign_id, partner_id, status)
 select c.id, p.id, 'convidado'
 from public.campaigns c
 cross join public.profiles p
 where c.status = 'ativa' and p.role = 'partner' and p.status = 'ativo'
 on conflict (campaign_id, partner_id) do nothing;
+
+-- Delivered/accepted history powers the "Participação em campanhas" criterion.
+update public.campaign_participants cp
+   set status = 'entregue'
+  from public.profiles p
+ where cp.partner_id = p.id
+   and p.handle in ('marina.dev', 'bruno.al')
+   and cp.campaign_id in (
+     'ca000001-0000-0000-0000-000000000001',
+     'ca000001-0000-0000-0000-000000000002'
+   );
+
+update public.campaign_participants cp
+   set status = 'aceito'
+  from public.profiles p
+ where cp.partner_id = p.id
+   and (
+     (p.handle = 'bruno.al'   and cp.campaign_id = 'ca000001-0000-0000-0000-000000000003') or
+     (p.handle = 'cami.rocha' and cp.campaign_id = 'ca000001-0000-0000-0000-000000000002')
+   );
 
 insert into public.notifications (partner_id, type, title, body, href)
 select p.id, 'campaign', 'Nova campanha disponível',

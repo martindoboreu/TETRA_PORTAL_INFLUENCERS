@@ -1,8 +1,9 @@
 'use client'
 
 import { useActionState, useEffect, useState } from 'react'
+import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { MoreHorizontal, Check, Pencil, Send, ClipboardCheck } from 'lucide-react'
+import { MoreHorizontal, Check, Pencil, Send, ClipboardCheck, UserRound, Megaphone, PauseCircle, PlayCircle } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -114,7 +115,31 @@ export function PartnerActions({
             <MoreHorizontal className="h-4 w-4" />
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" className="w-56">
+        <DropdownMenuContent align="end" className="w-60">
+          <DropdownMenuItem asChild>
+            <Link href={`/admin/parceiros/${partnerId}`}>
+              <UserRound className="mr-2 h-4 w-4" />
+              Ver perfil
+            </Link>
+          </DropdownMenuItem>
+          {evaluation !== undefined && (
+            <DropdownMenuItem onSelect={() => setEvalOpen(true)}>
+              <ClipboardCheck className="mr-2 h-4 w-4" />
+              Avaliação do parceiro
+            </DropdownMenuItem>
+          )}
+          <DropdownMenuItem asChild>
+            <Link href="/admin/campanhas">
+              <Megaphone className="mr-2 h-4 w-4" />
+              Convidar para campanha
+            </Link>
+          </DropdownMenuItem>
+          <DropdownMenuItem onSelect={() => setEditOpen(true)}>
+            <Pencil className="mr-2 h-4 w-4" />
+            Ajustar alcance
+          </DropdownMenuItem>
+
+          <DropdownMenuSeparator />
           <DropdownMenuLabel className="text-xs font-medium text-[#9CA3AF]">Status na Tetra Society</DropdownMenuLabel>
           {SOCIETY_TIERS.map((tier) => {
             const isCurrent = tier.key === currentTier
@@ -141,24 +166,13 @@ export function PartnerActions({
           })}
 
           <DropdownMenuSeparator />
-          {evaluation !== undefined && (
-            <DropdownMenuItem onSelect={() => setEvalOpen(true)}>
-              <ClipboardCheck className="mr-2 h-4 w-4" />
-              Avaliação do parceiro
-            </DropdownMenuItem>
-          )}
-          <DropdownMenuItem onSelect={() => setEditOpen(true)}>
-            <Pencil className="mr-2 h-4 w-4" />
-            Ajustar alcance
-          </DropdownMenuItem>
-
-          <DropdownMenuSeparator />
           {status !== 'ativo' && (
             <form action={statusAction}>
               <input type="hidden" name="partner_id" value={partnerId} />
               <input type="hidden" name="status" value="ativo" />
               <button type="submit" className="flex w-full items-center px-2 py-1.5 text-sm hover:bg-[#f6f6f6]">
-                Ativar
+                <PlayCircle className="mr-2 h-4 w-4 text-[#0FB5A6]" />
+                Reativar parceiro
               </button>
             </form>
           )}
@@ -166,8 +180,9 @@ export function PartnerActions({
             <form action={statusAction}>
               <input type="hidden" name="partner_id" value={partnerId} />
               <input type="hidden" name="status" value="inativo" />
-              <button type="submit" className="flex w-full items-center px-2 py-1.5 text-sm text-[#EF4444] hover:bg-[#f6f6f6]">
-                Inativar
+              <button type="submit" className="flex w-full items-center px-2 py-1.5 text-sm text-[#B91C1C] hover:bg-[#f6f6f6]">
+                <PauseCircle className="mr-2 h-4 w-4" />
+                Pausar parceiro
               </button>
             </form>
           )}

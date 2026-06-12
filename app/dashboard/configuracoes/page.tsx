@@ -1,3 +1,4 @@
+import Link from 'next/link'
 import { User, CreditCard, Shield, Bell, Share2 } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -150,18 +151,20 @@ export default async function ConfiguracoesPage({ searchParams }: ConfiguracoesP
             <CardHeader>
               <div className="flex items-center gap-2">
                 <Shield className="h-5 w-5 text-ink-muted" />
-                <CardTitle className="text-base font-semibold text-ink">Segurança</CardTitle>
+                <CardTitle className="text-base font-semibold text-ink">Compliance & Segurança</CardTitle>
               </div>
-              <CardDescription>Proteja sua conta</CardDescription>
+              <CardDescription>Diretrizes de divulgação e status da sua conta</CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="flex items-center justify-between">
+              <div className="flex flex-wrap items-center justify-between gap-3">
                 <div>
                   <p className="font-medium text-ink">Senha de acesso</p>
-                  <p className="text-sm text-ink-muted">Gerenciada pela autenticação Tetra</p>
+                  <p className="text-sm text-ink-muted">
+                    Gerenciada pela autenticação Tetra — nunca pedimos sua senha por mensagem.
+                  </p>
                 </div>
-                <Button variant="outline" size="sm" disabled className="border-line">
-                  Em breve
+                <Button asChild variant="outline" size="sm" className="border-line">
+                  <Link href="/dashboard/compliance">Ver diretrizes e status</Link>
                 </Button>
               </div>
             </CardContent>

@@ -19,6 +19,16 @@ function randomSuffix(): string {
   return Math.random().toString(36).slice(2, 7)
 }
 
+// Reject keyboard-mash labels ("asdasdasd", "aaaa") — every origin in the
+// performance table must read like a real channel.
+function isJunkLabel(label: string): boolean {
+  const compact = label.toLowerCase().replace(/\s+/g, '')
+  if (compact.length < 3) return true
+  if (/(.)\1{3,}/.test(compact)) return true // 4+ repeats of one char
+  if (/^(.{1,4})\1+$/.test(compact)) return true // short pattern repeated (asd-asd-asd)
+  return false
+}
+
 export async function createLink(
   _prev: LinkActionState,
   formData: FormData
@@ -28,6 +38,12 @@ export async function createLink(
   const discountCode = String(formData.get('discount_code') ?? '').trim() || null
 
   if (!label) return { ok: false, error: 'Dê um nome ao link.' }
+  if (isJunkLabel(label)) {
+    return {
+      ok: false,
+      error: 'Use um nome descritivo da origem, ex.: Reel "IA não é Google" ou Bio Instagram.',
+    }
+  }
 
   const supabase = await createClient()
   const {
