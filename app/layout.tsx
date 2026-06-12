@@ -14,8 +14,8 @@ const geistMono = Geist_Mono({
 })
 
 export const metadata: Metadata = {
-  title: 'Tetra Partner Studio | Tetra Educação',
-  description: 'O estúdio de parceiros da Tetra Educação. Acompanhe sua receita, campanhas privadas e seu status na Tetra Society.',
+  title: 'Portal Afiliado | Tetra Educação',
+  description: 'O portal de afiliados da Tetra Educação. Acompanhe sua receita, campanhas privadas e seu status na Tetra Society.',
   generator: 'Next.js',
 }
 

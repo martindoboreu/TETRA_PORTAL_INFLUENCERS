@@ -24,11 +24,11 @@ export default function LoginPage() {
 
         <div className="rounded-2xl border border-white/10 bg-[#201f1d] p-8 shadow-[0_8px_40px_rgba(0,0,0,0.45)]">
           <div className="mb-7 text-center">
-            <h1 className="text-[24px] font-semibold tracking-tight text-[#f6f6f6]">
-              Tetra Partner Studio
+            <h1 className="text-[22px] font-normal text-[#f6f6f6]">
+              Portal Afiliado
             </h1>
             <p className="mt-1.5 text-[14px] text-[rgba(255,255,255,0.55)]">
-              Entre para acessar seu estúdio na Tetra Society
+              Entre para acessar sua conta de afiliado
             </p>
           </div>
 
